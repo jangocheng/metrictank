@@ -55,19 +55,25 @@ func (ig IterGen) Format() Format {
 	return Format(ig.B[0])
 }
 
-// TODO we used to
-// b := make([]byte, len(ig.B), len(ig.B))
-// copy(b, ig.B)
-// needed?
 func (ig *IterGen) Get() (Iter, error) {
+	// note: the tsz iterators modify the stream as they read it, so we must always give it a copy.
 	switch ig.Format() {
 	case FormatStandardGoTsz:
-		return tsz.NewIterator4h(ig.B[1:])
+		src := ig.B[1:]
+		dest := make([]byte, len(src), len(src))
+		copy(dest, src)
+		return tsz.NewIterator4h(dest)
 	case FormatStandardGoTszWithSpan:
-		return tsz.NewIterator4h(ig.B[2:])
+		src := ig.B[2:]
+		dest := make([]byte, len(src), len(src))
+		copy(dest, src)
+		return tsz.NewIterator4h(dest)
 	}
 	// FormatGoTszLongWithSpan:
-	return tsz.NewIteratorLong(ig.T0, ig.B[2:])
+	src := ig.B[2:]
+	dest := make([]byte, len(src), len(src))
+	copy(dest, src)
+	return tsz.NewIteratorLong(ig.T0, dest)
 }
 
 func (ig *IterGen) Span() uint32 {
