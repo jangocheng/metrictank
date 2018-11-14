@@ -152,7 +152,7 @@ func main() {
 
 	globalFlags.Parse(os.Args[1:cassI])
 	cassFlags.Parse(os.Args[cassI+1 : len(os.Args)-1])
-	cassandra.Enabled = true
+	cassandra.CliConfig.Enabled = true
 
 	if regexStr != "" {
 		var err error
@@ -178,7 +178,7 @@ func main() {
 		show = out.Template(format)
 	}
 
-	idx := cassandra.New()
+	idx := cassandra.New(cassandra.CliConfig)
 	err := idx.InitBare()
 	perror(err)
 

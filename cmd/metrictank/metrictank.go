@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	l "log"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"runtime"
@@ -13,8 +14,6 @@ import (
 	"sync"
 	"syscall"
 	"time"
-
-	_ "net/http/pprof"
 
 	"github.com/Dieterbe/profiletrigger/heap"
 	"github.com/Shopify/sarama"
@@ -189,6 +188,7 @@ func main() {
 	statsConfig.ConfigProcess(*instance)
 	mdata.ConfigProcess()
 	memory.ConfigProcess()
+	cassandra.ConfigProcess()
 	bigtable.ConfigProcess()
 	bigtableStore.ConfigProcess(mdata.MaxChunkSpan())
 
@@ -341,11 +341,11 @@ func main() {
 		}
 		metricIndex = memory.New()
 	}
-	if cassandra.Enabled {
+	if cassandra.CliConfig.Enabled {
 		if metricIndex != nil {
 			log.Fatal("Only 1 metricIndex handler can be enabled.")
 		}
-		metricIndex = cassandra.New()
+		metricIndex = cassandra.New(cassandra.CliConfig)
 	}
 	if bigtable.CliConfig.Enabled {
 		if metricIndex != nil {
